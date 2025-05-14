@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 import {
   View,
   Text,
@@ -11,6 +13,7 @@ import {
 } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 import EventCard from "../components/EventCard";
+import { Linking } from "react-native";
 
 export default function MyEventsScreen() {
   const { user } = useContext(AuthContext);
@@ -26,11 +29,13 @@ export default function MyEventsScreen() {
     { key: "bookmarked", label: "Bookmarked" },
   ];
 
-  useEffect(() => {
-    if (user?.user_id) {
-      fetchEvents();
-    }
-  }, [user]);
+  useFocusEffect(
+    useCallback(() => {
+      if (user?.user_id) {
+        fetchEvents();
+      }
+    }, [user?.user_id])
+  );
 
   const fetchEvents = async () => {
     setLoading(true);
@@ -93,6 +98,24 @@ export default function MyEventsScreen() {
     }
   };
 
+  const handleAddToCalendar = (event) => {
+    const start = new Date(event.start_time)
+      .toISOString()
+      .replace(/-|:|\.\d\d\d/g, "");
+    const end = new Date(event.end_time)
+      .toISOString()
+      .replace(/-|:|\.\d\d\d/g, "");
+    const title = encodeURIComponent(event.title);
+    const details = encodeURIComponent(event.description || "");
+    const location = encodeURIComponent(event.loc_address || "");
+
+    const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}&sf=true&output=xml`;
+
+    Linking.openURL(url).catch((err) =>
+      Alert.alert("Error", "Could not open calendar")
+    );
+  };
+
   const renderSection = (title, data, actionType) => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -110,6 +133,12 @@ export default function MyEventsScreen() {
                   title="Delete"
                   color="red"
                   onPress={() => handleDelete(item.event_id)}
+                />
+              )}
+              {actionType === "calendar" && (
+                <Button
+                  title="Add to Google Calendar"
+                  onPress={() => handleAddToCalendar(item)}
                 />
               )}
               {actionType === "unbookmark" && (
@@ -157,7 +186,7 @@ export default function MyEventsScreen() {
         {activeTab === "created" &&
           renderSection("Events You Created", created, "delete")}
         {activeTab === "signedUp" &&
-          renderSection("Events You Signed Up For", signedUp)}
+          renderSection("Events You Signed Up For", signedUp, "calendar")}
         {activeTab === "bookmarked" &&
           renderSection("Bookmarked Events", bookmarked, "unbookmark")}
       </View>

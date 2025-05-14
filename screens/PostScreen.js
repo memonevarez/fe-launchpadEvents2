@@ -32,7 +32,7 @@ export default function PostScreen() {
     end_time: new Date(),
     event_image:
       "https://images.pexels.com/photos/8533585/pexels-photo-8533585.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    number_of_tickets: 300,
+    number_of_tickets: 0,
     tickets_bought: 0,
     price: 0,
   });
@@ -82,7 +82,7 @@ export default function PostScreen() {
 
     const body = {
       ...form,
-      created_by: user.id,
+      created_by: user.user_id,
       start_time: form.start_time.toISOString(),
       end_time: form.end_time.toISOString(),
     };
@@ -113,7 +113,7 @@ export default function PostScreen() {
       });
 
       showSuccessMessage("Event posted!");
-      navigation.navigate("Events", { reload: true });
+      navigation.navigate("MyEvents", { reload: true });
     } catch (error) {
       console.error("Post failed", error);
       Alert.alert("Error", "Failed to post event.");

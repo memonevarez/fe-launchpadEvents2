@@ -28,7 +28,7 @@ export default function EventCard({ item }) {
         {ticketsRemaining} out of {item.number_of_tickets} tickets remaining
       </Text>
       <TouchableOpacity style={styles.priceButton}>
-        <Text style={styles.priceText}>Buy ticket for £{price}</Text>
+        <Text style={styles.priceText}>Tickets £{price}</Text>
       </TouchableOpacity>
       <View style={styles.cardBody}>
         <Text style={styles.title}>“{item.title}”</Text>
