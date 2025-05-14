@@ -32,6 +32,8 @@ function withHeader(Component, title) {
 }
 
 export default function MainTabs() {
+  const { user } = useContext(AuthContext); // Access user info from context
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -57,7 +59,9 @@ export default function MainTabs() {
         name="Events"
         component={withHeader(EventsScreen, "Events")}
       />
-      <Tab.Screen name="Post" component={withHeader(PostScreen, "Post")} />
+      {user?.is_staff && (
+        <Tab.Screen name="Post" component={withHeader(PostScreen, "Post")} />
+      )}
       <Tab.Screen
         name="MyEvents"
         component={withHeader(MyEventsScreen, "My Events")}
