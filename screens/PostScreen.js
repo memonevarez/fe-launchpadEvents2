@@ -95,7 +95,6 @@ export default function PostScreen() {
       });
 
       const json = await res.json();
-      console.log("Posted:", json);
       //Reset form
       setForm({
         title: "",

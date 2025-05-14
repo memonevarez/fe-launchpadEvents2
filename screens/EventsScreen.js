@@ -8,10 +8,15 @@ import {
   TouchableOpacity,
 } from "react-native";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 import { format } from "date-fns";
 
 const EventsScreen = () => {
   const [events, setEvents] = useState([]);
+  const { user } = useContext(AuthContext);
+  const navigation = useNavigation();
 
   useEffect(() => {
     axios
@@ -23,6 +28,25 @@ const EventsScreen = () => {
         console.error("Error fetching events", err);
       });
   }, []);
+
+  const handleBuyTicket = async (event_id) => {
+    try {
+      await axios.post(
+        `http://localhost:9090/api/events/${event_id}/attendEvent`,
+        {
+          user_id: user.user_id,
+          event_id: event_id,
+          bookmarked: false,
+        }
+      );
+
+      // Navigate to MyEvents with params indicating the active tab
+      navigation.navigate("MyEvents", { activeTab: "signedUp", reload: true });
+    } catch (error) {
+      console.error("Ticket purchase failed:", error.message);
+      // You can optionally show a toast or alert
+    }
+  };
 
   const renderEvent = ({ item }) => {
     const formattedDate = format(
@@ -43,7 +67,10 @@ const EventsScreen = () => {
         <Text style={styles.ticketCount}>
           {ticketsRemaining} out of {item.number_of_tickets} tickets remaining
         </Text>
-        <TouchableOpacity style={styles.priceButton}>
+        <TouchableOpacity
+          onPress={() => handleBuyTicket(item.event_id)}
+          style={styles.priceButton}
+        >
           <Text style={styles.priceText}>Buy ticket for £{price}</Text>
         </TouchableOpacity>
         <View style={styles.cardBody}>

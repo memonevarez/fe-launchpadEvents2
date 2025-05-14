@@ -59,7 +59,6 @@ export default function MyEventsScreen() {
       console.error("Failed to fetch events", error);
     } finally {
       setLoading(false);
-      console.log("Created Events Array:", createdEvents.events);
     }
   };
 

@@ -21,7 +21,6 @@ export default function LoginScreen() {
 
       const user = await response.json();
       setUser(user.user); // Will trigger navigation to MainTabs
-      console.log(user, "UserLoginPage");
     } catch (error) {
       console.error("Login failed:", error);
       Alert.alert("Login Failed", "Invalid username or password.");
